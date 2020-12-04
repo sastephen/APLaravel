@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\storePostRequest;
-use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Requests\storePostReqeust;
+use App\Models\Category;
 
 class HomeController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')->except('index');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -16,8 +22,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $data = Post::latest()->get();
-        return view('home',compact('data'));
+        $data = Post::where('user_id', auth()->id())->orderBy('id', 'desc')->get();
+        return view('home', compact('data'));
     }
 
     /**
@@ -27,7 +33,8 @@ class HomeController extends Controller
      */
     public function create()
     {
-        return view('create');
+        $categories = Category::all();
+        return view('create', compact('categories'));
     }
 
     /**
@@ -36,18 +43,10 @@ class HomeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(storePostRequest $request)
+    public function store(storePostReqeust $request)
     {
-        // $post = new Post();
-        // $post->name = $request->name;
-        // $post->description = $request->description;
-        // $post->save();
-
-        Post::create([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
-
+        $validated = $request->validated();
+        Post::create($validated);
 
         return redirect('/posts');
     }
@@ -60,8 +59,10 @@ class HomeController extends Controller
      */
     public function show(Post $post)
     {
-        // dd($post->categories->name);
-        return view('show',compact('post'));
+
+
+        $this->authorize('view', $post);
+        return view('show', compact('post'));
     }
 
     /**
@@ -72,7 +73,11 @@ class HomeController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('edit',compact('post'));
+
+        $this->authorize('view', $post);
+
+        $categories = Category::all();
+        return view('edit', compact('post', 'categories'));
     }
 
     /**
@@ -82,19 +87,13 @@ class HomeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(storePostRequest $request,Post $post)
+    public function update(storePostReqeust $request, Post $post)
     {
-        // $post->name = $request->name;
-        // $post->description = $request->description;
-        // $post->save();
+        $validated = $request->validated();
 
-        $post->update([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
+        $post->update($validated);
 
         return redirect('/posts');
-
     }
 
     /**
@@ -106,6 +105,6 @@ class HomeController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-        return redirect()->back();
+        return redirect('/posts');
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,4 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::resource('/posts', HomeController::class);
+
+// Route::get('/', [HomeController::class, 'testroot'])->name('root');
+Route::resource('posts', HomeController::class);
+
+Route::get('logout', [AuthController::class, 'logout']);

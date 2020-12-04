@@ -3,34 +3,32 @@
 @section('content')
     <div class="container">
         <div>
-            <a href="posts/create" class="btn btn-success">New Post</a>
+            <a href="/posts/create" class="btn btn-success">New Post</a>
+            <a href="/logout" class="btn btn-success">logout</a>
+            <p style="float: right">{{ Auth::user()->name }}</p>
         </div><br>
         <div class="card">
-            <div class="card-header" style="text-align:center">
-                Contents
-            </div>
-            <div class="card-body">
-                @foreach ($data as $post)
-
-                    <div>
-                        <h5 class="card-title">{{ $post->name }}</h5>
-                        <p class="card-text">{{ $post->description }}</p>
-                        <div class="form-row">
-                            <a href="/posts/{{ $post->id }}" class="m-2 btn btn-primary">View</a>
-                            <a href="/posts/{{ $post->id }}/edit" class="m-2 btn btn-warning">Edit</a>
-                            <form action="/posts/{{ $post->id }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button class="m-2 btn btn-danger">Del</button>
-                            </form>
-                        </div>
+        <div class="card-header" style="text-align:center">
+            Contents
+        </div>
+        <div class="card-body">
+            @foreach($data as $post)
+                <div>
+                    <h5 class="card-title">{{ $post->name }}</h5>
+                    <p class="card-text">{{ $post->description }}</p>
+                    <div class="form-row">
+                        <a style=" height: 40px; margin-right: 10px; " href="/posts/{{ $post->id }}" class="btn btn-primary">View</a>
+                        <a style=" height: 40px; margin-right: 10px; " href="/posts/{{ $post->id }}/edit" class="btn btn-warning">Edit</a>
+                        <form action="/posts/{{$post->id}}" method="post">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
                     </div>
-                    <hr>
+                </div><hr>
+            @endforeach
 
-                @endforeach
-
-            </div>
+        </div>
         </div>
     </div>
-
 @endsection
